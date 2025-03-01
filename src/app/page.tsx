@@ -1,101 +1,296 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { Button, Typography, Space, Card, Row, Col, theme } from "antd";
+import {
+  MessageOutlined,
+  QuestionCircleOutlined,
+  BookOutlined,
+} from "@ant-design/icons";
 import Image from "next/image";
+import { Outfit } from "next/font/google";
 
-export default function Home() {
+const { Title, Paragraph } = Typography;
+const { useToken } = theme;
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  weight: ["800"],
+});
+
+export default function HomePage() {
+  const router = useRouter();
+  const { token } = useToken();
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="px-10 py-5 max-w-7xl mx-auto min-h-screen flex flex-col justify-center">
+      <Row gutter={[24, 24]} align="middle">
+        <Col xs={24} md={12}>
+          <Space direction="vertical" size="large">
+            <Title
+              className={outfit.className}
+              style={{
+                fontSize: "4rem",
+                background: `linear-gradient(135deg, ${token.colorPrimary} 0%, #36a1ff 100%)`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                marginBottom: 0,
+                letterSpacing: "-0.02em",
+              }}
+            >
+              Tanya Nikah
+            </Title>
+            <Paragraph
+              style={{
+                fontSize: "18px",
+                color: "#15417E",
+                lineHeight: 1.6,
+                letterSpacing: "0.01em",
+                maxWidth: "600px",
+              }}
+            >
+              Asisten pintar yang memberikan jawaban cepat dan akurat seputar
+              pernikahan dalam Islam. Temukan informasi terpercaya tentang rukun
+              nikah, mahar, wali, dan berbagai aspek penting lainnya untuk
+              menuju akad yang berkah.
+            </Paragraph>
+            <Button
+              type="primary"
+              size="large"
+              onClick={() => router.push("/chat")}
+              style={{
+                height: "50px",
+                borderRadius: "8px",
+                fontSize: "16px",
+                boxShadow: "0 4px 14px 0 rgba(0,118,255,0.39)",
+                transition: "all 0.3s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow =
+                  "0 6px 20px rgba(0,118,255,0.39)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "none";
+                e.currentTarget.style.boxShadow =
+                  "0 4px 14px 0 rgba(0,118,255,0.39)";
+              }}
+            >
+              Mulai Bertanya
+            </Button>
+          </Space>
+        </Col>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+        <Col xs={24} md={12}>
+          <div className="flex justify-center items-center h-full">
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+              src="/images/illustration/couple.png"
+              alt="Tanya Nikah Illustration"
+              className="max-w-full h-auto"
+              width={500}
+              height={500}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+          </div>
+        </Col>
+      </Row>
+
+      <div className="mt-10">
+        <Title
+          level={2}
+          className={outfit.className}
+          style={{
+            textAlign: "center",
+            marginBottom: "40px",
+            position: "relative",
+            display: "inline-block",
+            left: "50%",
+            transform: "translateX(-50%)",
+            background: `linear-gradient(135deg, ${token.colorPrimary} 0%, #36a1ff 100%)`,
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            fontSize: "2.5rem",
+            fontWeight: 800,
+          }}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          Fitur Utama
+          <div className="absolute -bottom-2 left-1/4 w-1/2 h-1 bg-gradient-to-r from-primary to-[#36a1ff] rounded-sm" />
+        </Title>
+
+        <Row gutter={[24, 24]}>
+          <Col xs={24} md={8}>
+            <Card
+              style={{
+                height: "100%",
+                borderRadius: "12px",
+                background: "#ffffff",
+                border: `1px solid ${token.colorPrimaryBorder}`,
+                transition: "all 0.3s ease",
+              }}
+              hoverable
+              styles={{
+                body: {
+                  padding: "28px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  textAlign: "center",
+                },
+              }}
+            >
+              <div className="bg-primary-bg rounded-xl p-4 mb-5">
+                <QuestionCircleOutlined
+                  style={{
+                    fontSize: "32px",
+                    color: token.colorPrimary,
+                  }}
+                />
+              </div>
+              <Title
+                level={4}
+                className={outfit.className}
+                style={{
+                  marginBottom: "12px",
+                  fontSize: "20px",
+                  color: "#15417E",
+                }}
+              >
+                Tanya Jawab Cepat
+              </Title>
+              <Paragraph
+                style={{
+                  color: "#334155",
+                  margin: 0,
+                  fontSize: "15px",
+                  lineHeight: 1.6,
+                }}
+              >
+                Dapatkan jawaban instan untuk pertanyaan seputar pernikahan
+                dalam Islam.
+              </Paragraph>
+            </Card>
+          </Col>
+
+          <Col xs={24} md={8}>
+            <Card
+              style={{
+                height: "100%",
+                borderRadius: "12px",
+                background: "#ffffff",
+                border: `1px solid ${token.colorPrimaryBorder}`,
+                transition: "all 0.3s ease",
+              }}
+              hoverable
+              styles={{
+                body: {
+                  padding: "28px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  textAlign: "center",
+                },
+              }}
+            >
+              <div
+                style={{
+                  background: token.colorPrimaryBg,
+                  borderRadius: "12px",
+                  padding: "16px",
+                  marginBottom: "20px",
+                }}
+              >
+                <BookOutlined
+                  style={{
+                    fontSize: "32px",
+                    color: token.colorPrimary,
+                  }}
+                />
+              </div>
+              <Title
+                level={4}
+                className={outfit.className}
+                style={{
+                  marginBottom: "12px",
+                  fontSize: "20px",
+                  color: "#15417E",
+                }}
+              >
+                Referensi Terpercaya
+              </Title>
+              <Paragraph
+                style={{
+                  color: "#334155",
+                  margin: 0,
+                  fontSize: "15px",
+                  lineHeight: 1.6,
+                }}
+              >
+                Jawaban berdasarkan sumber-sumber terpercaya dan sesuai syariat
+                Islam.
+              </Paragraph>
+            </Card>
+          </Col>
+
+          <Col xs={24} md={8}>
+            <Card
+              style={{
+                height: "100%",
+                borderRadius: "12px",
+                background: "#ffffff",
+                border: `1px solid ${token.colorPrimaryBorder}`,
+                transition: "all 0.3s ease",
+              }}
+              hoverable
+              styles={{
+                body: {
+                  padding: "28px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  textAlign: "center",
+                },
+              }}
+            >
+              <div
+                style={{
+                  background: token.colorPrimaryBg,
+                  borderRadius: "12px",
+                  padding: "16px",
+                  marginBottom: "20px",
+                }}
+              >
+                <MessageOutlined
+                  style={{
+                    fontSize: "32px",
+                    color: token.colorPrimary,
+                  }}
+                />
+              </div>
+              <Title
+                level={4}
+                className={outfit.className}
+                style={{
+                  marginBottom: "12px",
+                  fontSize: "20px",
+                  color: "#15417E",
+                }}
+              >
+                Riwayat Percakapan
+              </Title>
+              <Paragraph
+                style={{
+                  color: "#334155",
+                  margin: 0,
+                  fontSize: "15px",
+                  lineHeight: 1.6,
+                }}
+              >
+                Simpan dan akses kembali percakapan sebelumnya dengan mudah.
+              </Paragraph>
+            </Card>
+          </Col>
+        </Row>
+      </div>
     </div>
   );
 }
