@@ -1,18 +1,25 @@
-import type { NextRequest } from "next/server";
+import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { KnowledgeSchema } from "@/lib/validations/knowledge";
 import { ZodError } from "zod";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { apiResponse } from "@/lib/api-response";
-import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
+
+interface RouteContext {
+  params: {
+    id: string;
+  };
+}
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Params }
+  { params }: { params: RouteContext }
 ) {
   try {
     const knowledge = await prisma.knowledge.findUnique({
-      where: { id: params.id },
+      where: {
+        id: params.params.id,
+      },
     });
 
     if (!knowledge) {
@@ -26,7 +33,6 @@ export async function GET(
     return apiResponse({
       message: "Knowledge retrieved successfully",
       data: knowledge,
-      statusCode: 200,
     });
   } catch (error) {
     return apiResponse({
@@ -40,14 +46,14 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Params }
+  { params }: { params: RouteContext }
 ) {
   try {
     const body = await request.json();
     const validatedData = KnowledgeSchema.parse(body);
 
     const knowledge = await prisma.knowledge.update({
-      where: { id: params.id },
+      where: { id: params.params.id },
       data: {
         keywords: validatedData.keywords,
         answer: validatedData.answer,
@@ -89,11 +95,11 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Params }
+  { params }: { params: RouteContext }
 ) {
   try {
     await prisma.knowledge.delete({
-      where: { id: params.id },
+      where: { id: params.params.id },
     });
 
     return apiResponse({
