@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import {
   Layout,
   Input,
@@ -59,7 +59,10 @@ export function ChatClient() {
   });
 
   const isNewChat = !activeChat;
-  const currentMessages = activeChat ? messages[activeChat] : [];
+  const currentMessages = useMemo(
+    () => (activeChat ? messages[activeChat] : []),
+    [activeChat, messages]
+  );
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
