@@ -1,4 +1,3 @@
-import { ApiResponse } from "@/lib/api-response";
 import { Knowledge } from "@/types/knowledge";
 
 export const KNOWLEDGE_QUERY_KEY = ["knowledges"] as const;
