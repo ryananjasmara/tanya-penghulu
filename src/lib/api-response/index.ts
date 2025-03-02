@@ -8,6 +8,7 @@ export function apiResponse<T>({
   meta,
   error,
   statusCode = 200,
+  headers,
 }: ApiResponseParams<T>) {
   const response: ApiResponse<T> = {
     status,
@@ -23,7 +24,10 @@ export function apiResponse<T>({
     response.error = error;
   }
 
-  return NextResponse.json(response, { status: statusCode });
+  return NextResponse.json(response, {
+    status: statusCode,
+    headers: headers,
+  });
 }
 
 export * from "./types";

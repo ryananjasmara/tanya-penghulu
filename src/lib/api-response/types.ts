@@ -20,4 +20,5 @@ export type ApiResponseParams<T> = {
   meta?: PaginationMeta;
   error?: any;
   statusCode?: number;
+  headers?: Record<string, string>;
 };
