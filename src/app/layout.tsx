@@ -1,6 +1,8 @@
+import "./globals.css";
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
-import "./globals.css";
+import { AppProviders, AntdRegistry } from "@/providers";
+import { ConfigProvider } from "antd";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -20,7 +22,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={plusJakartaSans.className}>
-      <body>{children}</body>
+      <body>
+        <AntdRegistry>
+          <ConfigProvider>
+            <AppProviders>{children}</AppProviders>
+          </ConfigProvider>
+        </AntdRegistry>
+      </body>
     </html>
   );
 }
