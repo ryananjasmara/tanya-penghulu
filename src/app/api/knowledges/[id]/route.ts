@@ -4,10 +4,11 @@ import { KnowledgeSchema } from "@/lib/validations/knowledge";
 import { ZodError } from "zod";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { apiResponse } from "@/lib/api-response";
+import { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Params }
 ) {
   try {
     const knowledge = await prisma.knowledge.findUnique({
@@ -18,21 +19,21 @@ export async function GET(
       return apiResponse({
         status: false,
         message: "Knowledge not found",
-        statusCode: 404
+        statusCode: 404,
       });
     }
 
     return apiResponse({
       message: "Knowledge retrieved successfully",
       data: knowledge,
-      statusCode: 200
+      statusCode: 200,
     });
   } catch (error) {
     return apiResponse({
       status: false,
       message: "Failed to fetch knowledge",
       error: error instanceof Error ? error.message : "Unknown error",
-      statusCode: 500
+      statusCode: 500,
     });
   }
 }
@@ -57,7 +58,7 @@ export async function PUT(
     return apiResponse({
       message: "Knowledge updated successfully",
       data: knowledge,
-      statusCode: 200
+      statusCode: 200,
     });
   } catch (error) {
     if (error instanceof ZodError) {
@@ -65,20 +66,23 @@ export async function PUT(
         status: false,
         message: "Invalid input data",
         error: error.errors,
-        statusCode: 400
+        statusCode: 400,
       });
     }
-    if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
+    if (
+      error instanceof PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
       return apiResponse({
         status: false,
         message: "Knowledge not found",
-        statusCode: 404
+        statusCode: 404,
       });
     }
     return apiResponse({
       status: false,
       message: "Failed to update knowledge",
-      statusCode: 500
+      statusCode: 500,
     });
   }
 }
@@ -94,20 +98,23 @@ export async function DELETE(
 
     return apiResponse({
       message: "Knowledge deleted successfully",
-      statusCode: 200
+      statusCode: 200,
     });
   } catch (error) {
-    if (error instanceof PrismaClientKnownRequestError && error.code === "P2025") {
+    if (
+      error instanceof PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
       return apiResponse({
         status: false,
         message: "Knowledge not found",
-        statusCode: 404
+        statusCode: 404,
       });
     }
     return apiResponse({
       status: false,
       message: "Failed to delete knowledge",
-      statusCode: 500
+      statusCode: 500,
     });
   }
 }
