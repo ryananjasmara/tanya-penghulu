@@ -25,6 +25,7 @@ import { fetchKnowledges } from "@/services/queries/knowledge";
 import { KNOWLEDGE_QUERY_KEY } from "@/services/queries/knowledge";
 import { useQuery } from "@tanstack/react-query";
 import { findMatchingKnowledge } from "@/utils/knowledge-matcher";
+import { MenuOutlined } from "@ant-design/icons";
 
 const { Header, Content, Sider } = Layout;
 const { Title, Text } = Typography;
@@ -140,6 +141,7 @@ export function ChatClient() {
         onCollapse={(value) => setCollapsed(value)}
         collapsedWidth={screens.md ? 80 : 0}
         breakpoint="md"
+        trigger={screens.md ? undefined : null}
         style={{
           background: token.colorBgContainer,
           borderRight: `1px solid ${token.colorBorderSecondary}`,
@@ -344,6 +346,16 @@ export function ChatClient() {
             zIndex: 1,
           }}
         >
+          {!screens.md && (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <Button
+                type="text"
+                icon={<MenuOutlined />}
+                onClick={() => setCollapsed(!collapsed)}
+                style={{ marginRight: "16px" }}
+              />
+            </div>
+          )}
           <Title
             level={4}
             className={outfit.className}
