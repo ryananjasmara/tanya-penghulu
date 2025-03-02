@@ -10,7 +10,7 @@ export type ApiResponse<T> = {
   message: string;
   data: T | null;
   meta?: PaginationMeta;
-  error?: any;
+  error?: unknown;
 };
 
 export type ApiResponseParams<T> = {
@@ -18,7 +18,7 @@ export type ApiResponseParams<T> = {
   message: string;
   data?: T | null;
   meta?: PaginationMeta;
-  error?: any;
+  error?: unknown;
   statusCode?: number;
   headers?: Record<string, string>;
 };
