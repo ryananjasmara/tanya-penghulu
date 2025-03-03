@@ -54,7 +54,7 @@ export function ChatClient() {
 
   const { data: knowledges } = useQuery({
     queryKey: KNOWLEDGE_QUERY_KEY,
-    queryFn: fetchKnowledges,
+    queryFn: () => fetchKnowledges({ limit: 1000 }),
     staleTime: 3600 * 1000,
   });
 

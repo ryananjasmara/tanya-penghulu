@@ -6,19 +6,17 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { apiResponse } from "@/lib/api-response";
 
 interface RouteContext {
-  params: {
-    id: string;
-  };
+  id: string;
 }
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: RouteContext }
+  _request: NextRequest,
+  { params }: { params: Promise<RouteContext> }
 ) {
   try {
     const knowledge = await prisma.knowledge.findUnique({
       where: {
-        id: params.params.id,
+        id: (await params).id,
       },
     });
 
@@ -46,14 +44,14 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: RouteContext }
+  { params }: { params: Promise<RouteContext> }
 ) {
   try {
     const body = await request.json();
     const validatedData = KnowledgeSchema.parse(body);
 
     const knowledge = await prisma.knowledge.update({
-      where: { id: params.params.id },
+      where: { id: (await params).id },
       data: {
         keywords: validatedData.keywords,
         answer: validatedData.answer,
@@ -94,12 +92,12 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: RouteContext }
+  _request: NextRequest,
+  { params }: { params: Promise<RouteContext> }
 ) {
   try {
     await prisma.knowledge.delete({
-      where: { id: params.params.id },
+      where: { id: (await params).id },
     });
 
     return apiResponse({
