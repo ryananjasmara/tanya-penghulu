@@ -9,7 +9,8 @@
     "lint": "next lint",
     "seed": "ts-node prisma/seed.ts",
     "db:seed": "prisma db seed",
-    "generate": "prisma generate"
+    "generate": "prisma generate",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@ant-design/cssinjs": "^1.23.0",
