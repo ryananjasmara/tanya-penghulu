@@ -16,4 +16,12 @@ model Knowledge {
   updatedAt DateTime @updatedAt
 
   @@map("knowledges")
+}
+
+model MissingAnswer {
+  id        String   @id @default(uuid())
+  question  String
+  createdAt DateTime @default(now())
+
+  @@map("missing_answers")
 } 

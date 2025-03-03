@@ -21,11 +21,10 @@ import {
 } from "@ant-design/icons";
 import { Outfit } from "next/font/google";
 import { useChatStore } from "@/stores/useChatStore";
-import { fetchKnowledges } from "@/services/queries/knowledge";
-import { KNOWLEDGE_QUERY_KEY } from "@/services/queries/knowledge";
-import { useQuery } from "@tanstack/react-query";
 import { findMatchingKnowledge } from "@/utils/knowledge-matcher";
 import { MenuOutlined } from "@ant-design/icons";
+import { useGetAllKnowledge } from "@/services/queries/knowledge";
+import { useCreateMissingAnswer } from "@/services/queries/missing-answer";
 
 const { Header, Content, Sider } = Layout;
 const { Title, Text } = Typography;
@@ -52,11 +51,12 @@ export function ChatClient() {
     deleteChat,
   } = useChatStore();
 
-  const { data: knowledges } = useQuery({
-    queryKey: KNOWLEDGE_QUERY_KEY,
-    queryFn: () => fetchKnowledges({ limit: 1000 }),
-    staleTime: 3600 * 1000,
+  const { data: knowledges } = useGetAllKnowledge({
+    page: 1,
+    limit: 1000,
   });
+
+  const { mutate: createMissingAnswer } = useCreateMissingAnswer();
 
   const isNewChat = !activeChat;
   const currentMessages = useMemo(
@@ -86,6 +86,10 @@ export function ChatClient() {
         knowledges || [],
         userMessage
       );
+
+      if (!matchingKnowledge) {
+        createMissingAnswer({ question: userMessage });
+      }
 
       setTimeout(() => {
         addMessage(
