@@ -10,9 +10,9 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Tanya Nikah - Menuntunmu menuju akad yang berkah",
+  title: "Tanya Penghulu - Menuntunmu menuju akad yang berkah",
   description:
-    "TanyaNikah adalah chatbot interaktif yang siap membimbingmu dengan informasi akurat dan terpercaya seputar pernikahan dalam Islam. Dari rukun dan syarat sah nikah hingga tata cara akad yang benar, semua tersedia dalam satu tempat. Dengan TanyaNikah, kamu bisa mendapatkan jawaban yang jelas dan sesuai syariat, kapan saja dan di mana saja. Menuntunmu menuju akad yang berkah!",
+    "Tanya Penghulu adalah chatbot interaktif yang siap membimbingmu dengan informasi akurat dan terpercaya seputar pernikahan dalam Islam. Dari rukun dan syarat sah nikah hingga tata cara akad yang benar, semua tersedia dalam satu tempat. Dengan TanyaNikah, kamu bisa mendapatkan jawaban yang jelas dan sesuai syariat, kapan saja dan di mana saja. Menuntunmu menuju akad yang berkah!",
 };
 
 export default function RootLayout({

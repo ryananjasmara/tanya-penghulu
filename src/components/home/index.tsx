@@ -51,7 +51,7 @@ export function HomeClient() {
                 paddingBottom: "4px",
               }}
             >
-              Tanya Nikah
+              Tanya Penghulu
             </Title>
             <Paragraph
               style={{
@@ -109,7 +109,7 @@ export function HomeClient() {
           >
             <Image
               src="/images/illustration/couple.png"
-              alt="Tanya Nikah Illustration"
+              alt="Tanya Penghulu Illustration"
               style={{
                 maxWidth: "100%",
                 height: "auto",
