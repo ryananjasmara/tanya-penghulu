@@ -3,7 +3,6 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import {
   Layout,
-  Input,
   Button,
   Avatar,
   List,
@@ -13,7 +12,6 @@ import {
   Grid,
 } from "antd";
 import {
-  SendOutlined,
   PlusOutlined,
   UserOutlined,
   RobotOutlined,
@@ -25,6 +23,7 @@ import { findMatchingKnowledge } from "@/utils/knowledge-matcher";
 import { MenuOutlined } from "@ant-design/icons";
 import { useGetAllKnowledge } from "@/services/queries/knowledge";
 import { useCreateMissingAnswer } from "@/services/queries/missing-answer";
+import { ChatForm } from "./partials/ChatForm";
 
 const { Header, Content, Sider } = Layout;
 const { Title, Text } = Typography;
@@ -39,7 +38,6 @@ export function ChatClient() {
   const { token } = useToken();
   const screens = Grid.useBreakpoint();
   const [collapsed, setCollapsed] = useState(!screens.md);
-  const [input, setInput] = useState("");
 
   const {
     chats,
@@ -102,25 +100,17 @@ export function ChatClient() {
     }, 500);
   };
 
-  const handleSend = () => {
-    if (!input.trim() || !knowledges) return;
-
-    const userMessage = input.trim();
+  const handleSend = (message: string) => {
+    if (!knowledges) return;
 
     if (isNewChat) {
       const newChatId = addChat();
-
-      addMessage(newChatId, userMessage, "user");
-      setInput("");
-
-      sendBotResponse(newChatId, userMessage);
+      addMessage(newChatId, message, "user");
+      sendBotResponse(newChatId, message);
     } else {
       if (!activeChat) return;
-
-      addMessage(activeChat, userMessage, "user");
-      setInput("");
-
-      sendBotResponse(activeChat, userMessage);
+      addMessage(activeChat, message, "user");
+      sendBotResponse(activeChat, message);
     }
   };
 
@@ -128,7 +118,6 @@ export function ChatClient() {
     if (isNewChat && screens.md) return;
 
     setActiveChat("");
-    setInput("");
 
     if (!screens.md) {
       setCollapsed(true);
@@ -500,69 +489,7 @@ export function ChatClient() {
           <div ref={messagesEndRef} style={{ height: 0 }} />
         </Content>
 
-        <div
-          style={{
-            padding: "16px 24px",
-            background: token.colorBgContainer,
-            borderTop: `1px solid ${token.colorBorderSecondary}`,
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: 1,
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              gap: "8px",
-              flexDirection: "row",
-            }}
-          >
-            <Input.TextArea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={"Ketik pertanyaan Anda di sini..."}
-              autoSize={{ minRows: 1, maxRows: 4 }}
-              onPressEnter={(e) => {
-                if (!e.shiftKey) {
-                  e.preventDefault();
-                  handleSend();
-                }
-              }}
-              style={{
-                borderRadius: "8px",
-                padding: "12px",
-                resize: "none",
-              }}
-            />
-            <Button
-              type="primary"
-              icon={<SendOutlined />}
-              onClick={handleSend}
-              disabled={!input.trim()}
-              style={{
-                borderRadius: "8px",
-                height: "46px",
-                width: "80px",
-                background: !input.trim()
-                  ? token.colorBgContainer
-                  : `linear-gradient(135deg, ${token.colorPrimary} 0%, #36a1ff 100%)`,
-                border: !input.trim()
-                  ? `1px solid ${token.colorBorder}`
-                  : "none",
-                boxShadow: !input.trim()
-                  ? "none"
-                  : "0 4px 14px 0 rgba(0,118,255,0.39)",
-                transition: "all 0.3s ease",
-                color: !input.trim() ? token.colorTextDisabled : "#fff",
-                cursor: !input.trim() ? "not-allowed" : "pointer",
-              }}
-            >
-              {!screens.md && "Kirim"}
-            </Button>
-          </div>
-        </div>
+        <ChatForm onSubmit={handleSend} />
       </Layout>
     </Layout>
   );

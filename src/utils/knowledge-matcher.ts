@@ -1,9 +1,9 @@
-import { Knowledge } from "@/types/knowledge";
+import { IKnowledge } from "@/types/knowledge";
 
 export function findMatchingKnowledge(
-  knowledges: Knowledge[],
+  knowledges: IKnowledge[],
   keyword: string
-): Knowledge | null {
+): IKnowledge | null {
   const lowerKeyword = keyword.toLowerCase();
   const words = lowerKeyword.split(" ");
 
