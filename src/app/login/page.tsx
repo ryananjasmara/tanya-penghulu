@@ -1,5 +1,5 @@
-import { LoginClient } from "@/components/login";
+import LoginClient from "@/components/login";
 
-export default async function LoginPage() {
+export default function LoginPage() {
   return <LoginClient />;
 }
