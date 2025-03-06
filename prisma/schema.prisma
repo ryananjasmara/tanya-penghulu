@@ -7,6 +7,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  ADMIN
+  STAFF
+}
+
+enum LogType {
+  SYSTEM
+  USER
+}
+
 model Knowledge {
   id        String   @id @default(uuid())
   keywords  String[]
@@ -24,4 +34,34 @@ model MissingAnswer {
   createdAt DateTime @default(now())
 
   @@map("missing_answers")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  username  String   @unique
+  password  String
+  role      UserRole @default(STAFF)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  activityLogs ActivityLog[]
+
+  @@map("users")
+}
+
+model ActivityLog {
+  id          String   @id @default(uuid())
+  action      String
+  description String
+  ipAddress   String?
+  type        LogType  @default(SYSTEM)
+  createdAt   DateTime @default(now())
+
+  userId    String?
+  user      User?   @relation(fields: [userId], references: [id])
+
+  @@map("activity_logs")
 } 
