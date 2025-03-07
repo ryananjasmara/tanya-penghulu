@@ -1,18 +1,21 @@
-import { Knowledge } from "@/types/knowledge";
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { knowledgeService } from "../api";
+import { IGetAllKnowledgeParams, IKnowledge } from "@/types/knowledge";
 
-export const KNOWLEDGE_QUERY_KEY = ["knowledges"] as const;
+export const KNOWLEDGE_QUERY_KEY = {
+  getAll: "knowledges.getAll",
+} as const;
 
-export async function fetchKnowledges({
-  limit = 1000,
-}: {
-  limit?: number;
-}): Promise<Knowledge[]> {
-  const res = await fetch(`/api/knowledges?limit=${limit}`);
+export const useGetAllKnowledge = (
+  params: IGetAllKnowledgeParams
+): UseQueryResult<IKnowledge[]> => {
+  const query = useQuery({
+    queryKey: [KNOWLEDGE_QUERY_KEY.getAll, params],
+    queryFn: async () => {
+      const response = await knowledgeService.getAll(params);
+      return response.data;
+    },
+  });
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch knowledges");
-  }
-
-  const data = await res.json();
-  return data.data;
-}
+  return query;
+};
