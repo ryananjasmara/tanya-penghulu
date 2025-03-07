@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { AppProviders, AntdRegistry } from "@/providers";
 import { ConfigProvider } from "antd";
+import { AuthProvider } from "@/providers/AuthProvider";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -25,7 +26,9 @@ export default function RootLayout({
       <body>
         <AntdRegistry>
           <ConfigProvider>
-            <AppProviders>{children}</AppProviders>
+            <AuthProvider>
+              <AppProviders>{children}</AppProviders>
+            </AuthProvider>
           </ConfigProvider>
         </AntdRegistry>
       </body>
