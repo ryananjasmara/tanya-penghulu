@@ -16,18 +16,13 @@ type FormValues = {
 export function ChatForm({ onSubmit }: ChatFormProps) {
   const { token } = useToken();
   const screens = Grid.useBreakpoint();
-  
-  const { 
-    control,
-    handleSubmit, 
-    reset,
-    watch
-  } = useForm<FormValues>({
+
+  const { control, handleSubmit, reset, watch } = useForm<FormValues>({
     defaultValues: {
-      message: ""
-    }
+      message: "",
+    },
   });
-  
+
   const message = watch("message");
 
   const onSubmitForm = handleSubmit((data) => {
