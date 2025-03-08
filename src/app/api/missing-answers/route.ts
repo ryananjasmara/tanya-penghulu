@@ -36,7 +36,6 @@ export async function POST(request: NextRequest) {
     return apiResponse({
       status: false,
       message: "Failed to record question",
-      error: error instanceof Error ? error.message : "Unknown error",
       statusCode: 500,
     });
   }

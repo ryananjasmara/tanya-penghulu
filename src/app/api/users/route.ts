@@ -60,7 +60,6 @@ export async function GET(req: Request) {
       status: false,
       message: "Failed to fetch users",
       statusCode: 500,
-      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -130,7 +129,6 @@ export async function POST(req: Request) {
       status: false,
       message: "Failed to create user",
       statusCode: 500,
-      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }

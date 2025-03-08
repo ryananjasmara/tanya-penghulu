@@ -39,7 +39,6 @@ export async function GET(
       status: false,
       message: "Failed to retrieve user data",
       statusCode: 500,
-      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -109,7 +108,6 @@ export async function PUT(
       status: false,
       message: "Failed to update user",
       statusCode: 500,
-      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -152,7 +150,6 @@ export async function DELETE(
       status: false,
       message: "Failed to delete user",
       statusCode: 500,
-      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }

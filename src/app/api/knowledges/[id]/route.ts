@@ -32,7 +32,6 @@ export async function GET(
     return apiResponse({
       status: false,
       message: "Failed to fetch knowledge",
-      error: error instanceof Error ? error.message : "Unknown error",
       statusCode: 500,
     });
   }
@@ -83,7 +82,6 @@ export async function PUT(
       status: false,
       message: "Failed to update knowledge",
       statusCode: 500,
-      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -116,7 +114,6 @@ export async function DELETE(
       status: false,
       message: "Failed to delete knowledge",
       statusCode: 500,
-      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }

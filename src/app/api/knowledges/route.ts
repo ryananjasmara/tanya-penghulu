@@ -36,7 +36,6 @@ export async function GET(request: NextRequest) {
     return apiResponse({
       status: false,
       message: "Failed to fetch knowledges",
-      error: error instanceof Error ? error.message : "Unknown error",
       statusCode: 500,
     });
   }
@@ -74,7 +73,6 @@ export async function POST(request: NextRequest) {
     return apiResponse({
       status: false,
       message: "Failed to create knowledge",
-      error: error instanceof Error ? error.message : "Unknown error",
       statusCode: 500,
     });
   }
