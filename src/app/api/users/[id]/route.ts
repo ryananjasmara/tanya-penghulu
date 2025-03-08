@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth/password";
 import { z } from "zod";
 import { apiResponse } from "@/lib/api-response";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 const updateUserSchema = z.object({
   name: z.string().min(1, "Nama harus diisi").optional(),
@@ -38,6 +39,7 @@ export async function GET(
       status: false,
       message: "Failed to retrieve user data",
       statusCode: 500,
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -57,6 +59,16 @@ export async function PUT(
     const user = await prisma.user.update({
       where: { id: params.id },
       data: body,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        username: true,
+        role: true,
+        isActive: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
     await prisma.activityLog.create({
@@ -82,10 +94,22 @@ export async function PUT(
       });
     }
 
+    if (
+      error instanceof PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
+      return apiResponse({
+        status: false,
+        message: "User not found",
+        statusCode: 404,
+      });
+    }
+
     return apiResponse({
       status: false,
       message: "Failed to update user",
       statusCode: 500,
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }

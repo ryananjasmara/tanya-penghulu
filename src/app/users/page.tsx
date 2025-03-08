@@ -1,7 +1,7 @@
 "use client";
 
 import { SidebarClient } from "@/components/layout/Sidebar";
-import { Button } from "antd";
+import { Breadcrumb, Button } from "antd";
 import { UserTable } from "./__partials__/UserTable";
 import { UserData } from "@/types/user";
 import { useGetAllUsers } from "@/services/queries/user";
@@ -24,19 +24,28 @@ export default function UsersPage() {
 
   return (
     <SidebarClient>
-      <Button
-        type="primary"
-        style={{ marginBottom: 16 }}
-        onClick={() => router.push("/users/create")}
-      >
-        Add User
-      </Button>
-      <UserTable
-        data={users ?? []}
-        loading={isLoading}
-        onEdit={handleEditUser}
-        onDelete={handleDeleteUser}
-      />
+      <div style={{ padding: "0px 12px" }}>
+        <Breadcrumb
+          items={[
+            { title: "Pengguna" },
+            { title: "Daftar Pengguna", href: "/users" },
+          ]}
+          style={{ marginBottom: 24 }}
+        />
+        <Button
+          type="primary"
+          style={{ marginBottom: 24 }}
+          onClick={() => router.push("/users/create")}
+        >
+          Tambah Pengguna
+        </Button>
+        <UserTable
+          data={users ?? []}
+          loading={isLoading}
+          onEdit={handleEditUser}
+          onDelete={handleDeleteUser}
+        />
+      </div>
     </SidebarClient>
   );
 }

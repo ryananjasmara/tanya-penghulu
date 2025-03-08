@@ -1,9 +1,20 @@
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import {
+  useMutation,
+  UseMutationResult,
+  useQuery,
+  UseQueryResult,
+} from "@tanstack/react-query";
 import { userService } from "../api";
-import { IGetAllUsersParams, UserData } from "@/types/user";
+import {
+  ICreateUserParams,
+  ICreateUserResponse,
+  IGetAllUsersParams,
+  UserData,
+} from "@/types/user";
 
 export const USER_QUERY_KEY = {
   getAll: "users.getAll",
+  create: "users.create",
 } as const;
 
 export const useGetAllUsers = (
@@ -18,4 +29,30 @@ export const useGetAllUsers = (
   });
 
   return query;
+};
+
+export const usePostContact = (): UseMutationResult<
+  ICreateUserResponse,
+  unknown,
+  ICreateUserParams,
+  unknown
+> => {
+  const mutation = useMutation<
+    ICreateUserResponse,
+    unknown,
+    ICreateUserParams,
+    unknown
+  >({
+    mutationKey: [USER_QUERY_KEY.create],
+    mutationFn: async (data: ICreateUserParams) => {
+      const response = await userService.create(data);
+      return response;
+    },
+    onError: (error: unknown) => {
+      throw error;
+    },
+    retry: 0,
+  });
+
+  return mutation;
 };

@@ -4,6 +4,7 @@ import { z } from "zod";
 import { apiResponse } from "@/lib/api-response";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth-options";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 const createUserSchema = z.object({
   name: z.string().min(1, "Nama harus diisi"),
@@ -25,6 +26,16 @@ export async function GET(req: Request) {
       prisma.user.findMany({
         skip,
         take: limit,
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          username: true,
+          role: true,
+          isActive: true,
+          createdAt: true,
+          updatedAt: true,
+        },
         orderBy: {
           createdAt: "desc",
         },
@@ -49,6 +60,7 @@ export async function GET(req: Request) {
       status: false,
       message: "Failed to fetch users",
       statusCode: 500,
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
@@ -89,6 +101,7 @@ export async function POST(req: Request) {
     });
 
     return apiResponse({
+      status: true,
       data: user,
       message: "User created successfully",
     });
@@ -102,10 +115,22 @@ export async function POST(req: Request) {
       });
     }
 
+    if (
+      error instanceof PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return apiResponse({
+        status: false,
+        message: "Failed to create user due to duplicate data",
+        statusCode: 500,
+      });
+    }
+
     return apiResponse({
       status: false,
       message: "Failed to create user",
       statusCode: 500,
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }

@@ -25,3 +25,18 @@ export interface IGetAllUsersResponse {
     totalPages: number;
   };
 }
+
+export interface ICreateUserParams {
+  name: string;
+  email: string;
+  username: string;
+  password: string;
+  role: "ADMIN" | "STAFF";
+}
+
+export interface ICreateUserResponse {
+  status: boolean;
+  message: string;
+  data: UserData;
+  error?: unknown;
+}
