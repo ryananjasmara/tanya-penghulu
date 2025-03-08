@@ -503,6 +503,83 @@ Penyelesaian harus dengan cara bijak dan tidak kasar.`,
    - Penyakit sosial`,
     category: "nikah-mutah",
   },
+  {
+    keywords: ["syarat", "kua", "daftar nikah", "pendaftaran nikah"],
+    answer: `Syarat pendaftaran nikah di KUA:
+
+1. Dokumen yang diperlukan:
+  - Surat pengantar dari RT/RW
+  - Fotokopi KTP calon pengantin
+  - Fotokopi KK calon pengantin
+  - Pas foto 2x3 (4 lembar) berlatar biru
+  - Akta kelahiran
+  - N1, N2, N3, N4 dari desa/kelurahan
+  - N5 jika janda/duda mati
+  - Akta cerai asli jika janda/duda cerai
+  - Izin orangtua (N5) jika usia di bawah 21 tahun
+  - Surat izin komandan jika TNI/POLRI
+  
+2. Prosedur pendaftaran:
+  - Mendaftar minimal 10 hari kerja sebelum akad
+  - Membayar biaya nikah sesuai ketentuan
+  - Mengikuti kursus calon pengantin
+  - Pemeriksaan dokumen oleh penghulu
+  
+3. Biaya nikah (2024):
+  - Gratis jika di KUA pada jam kerja
+  - Rp600.000 jika di luar KUA/luar jam kerja
+  - Pembayaran melalui bank yang ditunjuk`,
+    category: "administrasi-nikah",
+  },
+  {
+    keywords: ["n1", "n2", "n3", "n4", "formulir nikah"],
+    answer: `Formulir N1-N4 untuk pendaftaran nikah:
+
+1. N1 (Surat Keterangan Nikah):
+  - Berisi data pribadi calon pengantin
+  - Dikeluarkan desa/kelurahan
+  - Memastikan status belum menikah
+
+2. N2 (Surat Keterangan Asal-Usul):
+  - Data orangtua calon pengantin
+  - Memastikan tidak ada hubungan mahram
+  - Ditandatangani kepala desa/lurah
+
+3. N3 (Surat Persetujuan Mempelai):
+  - Pernyataan persetujuan kedua calon
+  - Menikah atas kemauan sendiri
+  - Tidak ada paksaan
+
+4. N4 (Surat Keterangan Orangtua):
+  - Data lengkap orangtua
+  - Persetujuan orangtua
+  - Wajib untuk calon di bawah 21 tahun`,
+    category: "administrasi-nikah",
+  },
+  {
+    keywords: ["dispensasi", "nikah dini", "izin pengadilan"],
+    answer: `Dispensasi nikah di bawah umur:
+
+1. Syarat pengajuan:
+  - Usia calon suami di bawah 19 tahun
+  - Usia calon istri di bawah 19 tahun
+  - Surat permohonan ke Pengadilan Agama
+  - Persetujuan kedua orangtua
+  
+2. Dokumen yang diperlukan:
+  - KTP pemohon (orangtua)
+  - KK pemohon
+  - Akta kelahiran calon pengantin
+  - Surat N1-N4 dari desa/kelurahan
+  - Surat keterangan alasan mendesak
+  
+3. Prosedur:
+  - Mendaftar di Pengadilan Agama
+  - Sidang pemeriksaan
+  - Putusan hakim
+  - Penetapan dispensasi`,
+    category: "administrasi-nikah",
+  },
 ];
 
 async function main() {
