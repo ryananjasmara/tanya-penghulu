@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth/password";
 import { z } from "zod";
@@ -14,7 +14,7 @@ const updateUserSchema = z.object({
 });
 
 export async function GET(
-  req: Request,
+  _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -45,11 +45,11 @@ export async function GET(
 }
 
 export async function PUT(
-  req: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const json = await req.json();
+    const json = await request.json();
     const body = updateUserSchema.parse(json);
 
     if (body.password) {
@@ -76,7 +76,7 @@ export async function PUT(
         action: "UPDATE_USER",
         description: `Updated user: ${user.username}`,
         userId: "system",
-        ipAddress: req.headers.get("x-forwarded-for") || "unknown",
+        ipAddress: request.headers.get("x-forwarded-for") || "unknown",
       },
     });
 
@@ -108,6 +108,49 @@ export async function PUT(
     return apiResponse({
       status: false,
       message: "Failed to update user",
+      statusCode: 500,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const user = await prisma.user.delete({
+      where: { id: params.id },
+    });
+
+    await prisma.activityLog.create({
+      data: {
+        action: "DELETE_USER",
+        description: `Deleted user: ${user.username}`,
+        userId: "system",
+        ipAddress: request.headers.get("x-forwarded-for") || "unknown",
+      },
+    });
+
+    return apiResponse({
+      data: user,
+      message: "User deleted successfully",
+    });
+  } catch (error) {
+    if (
+      error instanceof PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
+      return apiResponse({
+        status: false,
+        message: "User not found",
+        statusCode: 404,
+      });
+    }
+
+    return apiResponse({
+      status: false,
+      message: "Failed to delete user",
       statusCode: 500,
       error: error instanceof Error ? error.message : "Unknown error",
     });

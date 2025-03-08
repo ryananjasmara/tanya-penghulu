@@ -5,18 +5,14 @@ import { ZodError } from "zod";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { apiResponse } from "@/lib/api-response";
 
-interface RouteContext {
-  id: string;
-}
-
 export async function GET(
   _request: NextRequest,
-  { params }: { params: Promise<RouteContext> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const knowledge = await prisma.knowledge.findUnique({
       where: {
-        id: (await params).id,
+        id: params.id,
       },
     });
 
@@ -44,14 +40,14 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<RouteContext> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const body = await request.json();
     const validatedData = KnowledgeSchema.parse(body);
 
     const knowledge = await prisma.knowledge.update({
-      where: { id: (await params).id },
+      where: { id: params.id },
       data: {
         keywords: validatedData.keywords,
         answer: validatedData.answer,
@@ -87,17 +83,18 @@ export async function PUT(
       status: false,
       message: "Failed to update knowledge",
       statusCode: 500,
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
 
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: Promise<RouteContext> }
+  { params }: { params: { id: string } }
 ) {
   try {
     await prisma.knowledge.delete({
-      where: { id: (await params).id },
+      where: { id: params.id },
     });
 
     return apiResponse({
@@ -119,6 +116,7 @@ export async function DELETE(
       status: false,
       message: "Failed to delete knowledge",
       statusCode: 500,
+      error: error instanceof Error ? error.message : "Unknown error",
     });
   }
 }
