@@ -1,19 +1,19 @@
-import { SidebarClient } from "@/components/layout/Sidebar";
 import { Breadcrumb } from "@/components/breadcrumb/Breadcrumb";
-import { CreateForm } from "./__partials__/CreateForm";
+import { SidebarClient } from "@/components/layout/Sidebar";
+import { EditForm } from "./__partials__/EditForm";
 
-export default function CreateUserPage() {
+export default function EditUserPage() {
   return (
     <SidebarClient>
       <div style={{ padding: "0px 12px" }}>
         <Breadcrumb
           items={[
             { title: "Pengguna" },
-            { title: "Buat Pengguna", href: "/users/create" },
+            { title: "Edit Pengguna", href: "/users/edit" },
           ]}
           style={{ marginBottom: 24 }}
         />
-        <CreateForm />
+        <EditForm />
       </div>
     </SidebarClient>
   );

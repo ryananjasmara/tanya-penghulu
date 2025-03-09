@@ -7,7 +7,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import Title from "antd/es/typography/Title";
-import { usePostContact } from "@/services/queries/user";
+import { useCreateUser } from "@/services/queries/user";
 
 const userSchema = z.object({
   name: z
@@ -45,9 +45,9 @@ const userSchema = z.object({
 
 type FormValues = z.infer<typeof userSchema>;
 
-export function UserForm() {
+export function CreateForm() {
   const router = useRouter();
-  const { mutate: createUser, isPending: isCreating } = usePostContact();
+  const { mutate: createUser, isPending: isCreating } = useCreateUser();
 
   const {
     control,
@@ -67,9 +67,8 @@ export function UserForm() {
   const onSubmit = async (values: FormValues) => {
     createUser(values, {
       onSuccess: () => {
-        message.success("User created successfully");
+        message.success("Pengguna berhasil dibuat");
         router.push("/users");
-        router.refresh();
       },
       onError: () => {
         message.error("Gagal membuat user");

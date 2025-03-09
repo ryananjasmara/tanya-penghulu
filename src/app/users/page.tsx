@@ -1,25 +1,52 @@
 "use client";
 
 import { SidebarClient } from "@/components/layout/Sidebar";
-import { Breadcrumb, Button } from "antd";
+import { Breadcrumb, Button, message, Modal } from "antd";
 import { UserTable } from "./__partials__/UserTable";
 import { UserData } from "@/types/user";
-import { useGetAllUsers } from "@/services/queries/user";
+import { useDeleteUser, useGetAllUsers } from "@/services/queries/user";
 import { useRouter } from "next/navigation";
+import { ExclamationCircleFilled } from "@ant-design/icons";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function UsersPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { data: users, isLoading } = useGetAllUsers({
     page: 1,
     limit: 10,
   });
 
+  const { mutate: deleteUser } = useDeleteUser();
+  const { confirm } = Modal;
+
   const handleEditUser = (record: UserData) => {
-    console.log("Edit User", record);
+    router.push(`/users/${record.id}`);
   };
 
   const handleDeleteUser = (record: UserData) => {
-    console.log("Delete User", record);
+    confirm({
+      title: "Hapus Pengguna",
+      icon: <ExclamationCircleFilled />,
+      content: `Apakah Anda yakin ingin menghapus pengguna "${record.name}"?`,
+      okText: "Hapus",
+      okType: "danger",
+      cancelText: "Batal",
+      onOk() {
+        deleteUser(
+          { id: record.id },
+          {
+            onSuccess: () => {
+              message.success("Pengguna berhasil dihapus");
+              queryClient.invalidateQueries({ queryKey: ["users"] });
+            },
+            onError: () => {
+              message.error("Gagal menghapus pengguna");
+            },
+          }
+        );
+      },
+    });
   };
 
   return (
