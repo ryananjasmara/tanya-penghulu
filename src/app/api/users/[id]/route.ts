@@ -4,6 +4,8 @@ import { hashPassword } from "@/lib/auth/password";
 import { z } from "zod";
 import { apiResponse } from "@/lib/api-response";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/auth-options";
 
 const updateUserSchema = z.object({
   name: z.string().min(1, "Nama harus diisi").optional(),
@@ -48,6 +50,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    const session = await getServerSession(authOptions);
     const json = await request.json();
     const body = updateUserSchema.parse(json);
 
@@ -74,7 +77,8 @@ export async function PUT(
       data: {
         action: "UPDATE_USER",
         description: `Updated user: ${user.username}`,
-        userId: "system",
+        type: session?.user ? "USER" : "SYSTEM",
+        userId: session?.user?.id,
         ipAddress: request.headers.get("x-forwarded-for") || "unknown",
       },
     });
@@ -117,6 +121,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    const session = await getServerSession(authOptions);
     const user = await prisma.user.delete({
       where: { id: params.id },
     });
@@ -125,7 +130,8 @@ export async function DELETE(
       data: {
         action: "DELETE_USER",
         description: `Deleted user: ${user.username}`,
-        userId: "system",
+        type: session?.user ? "USER" : "SYSTEM",
+        userId: session?.user?.id,
         ipAddress: request.headers.get("x-forwarded-for") || "unknown",
       },
     });

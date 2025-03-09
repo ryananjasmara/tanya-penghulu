@@ -14,9 +14,9 @@ const createUserSchema = z.object({
   role: z.enum(["ADMIN", "STAFF"]),
 });
 
-export async function GET(req: Request) {
+export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(req.url);
+    const { searchParams } = new URL(request.url);
     const page = Number(searchParams.get("page")) || 1;
     const limit = Number(searchParams.get("limit")) || 10;
 
@@ -64,10 +64,10 @@ export async function GET(req: Request) {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    const json = await req.json();
+    const json = await request.json();
     const body = createUserSchema.parse(json);
 
     const hashedPassword = await hashPassword(body.password);
@@ -95,7 +95,7 @@ export async function POST(req: Request) {
         description: `Created new user: ${user.username}`,
         type: session?.user ? "USER" : "SYSTEM",
         userId: session?.user?.id,
-        ipAddress: req.headers.get("x-forwarded-for") || "unknown",
+        ipAddress: request.headers.get("x-forwarded-for") || "unknown",
       },
     });
 
