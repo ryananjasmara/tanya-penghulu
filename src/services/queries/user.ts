@@ -6,6 +6,8 @@ import {
 } from "@tanstack/react-query";
 import { userService } from "../api";
 import {
+  IChangePasswordParams,
+  IChangePasswordResponse,
   ICreateUserParams,
   ICreateUserResponse,
   IDeleteUserParams,
@@ -23,6 +25,7 @@ export const USER_QUERY_KEY = {
   create: "users.create",
   update: "users.update",
   delete: "users.delete",
+  changePassword: "users.changePassword",
 } as const;
 
 export const useGetAllUsers = (
@@ -120,6 +123,32 @@ export const useDeleteUser = (): UseMutationResult<
     mutationKey: [USER_QUERY_KEY.delete],
     mutationFn: async (data: IDeleteUserParams) => {
       const response = await userService.delete(data);
+      return response;
+    },
+    onError: (error: unknown) => {
+      throw error;
+    },
+    retry: 0,
+  });
+
+  return mutation;
+};
+
+export const useChangePassword = (): UseMutationResult<
+  IChangePasswordResponse,
+  unknown,
+  IChangePasswordParams,
+  unknown
+> => {
+  const mutation = useMutation<
+    IChangePasswordResponse,
+    unknown,
+    IChangePasswordParams,
+    unknown
+  >({
+    mutationKey: [USER_QUERY_KEY.changePassword],
+    mutationFn: async (data: IChangePasswordParams) => {
+      const response = await userService.changePassword(data);
       return response;
     },
     onError: (error: unknown) => {

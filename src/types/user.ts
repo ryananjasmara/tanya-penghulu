@@ -44,10 +44,11 @@ export interface ICreateUserResponse {
 
 export interface IUpdateUserParams {
   id: string;
-  name: string;
-  email: string;
-  username: string;
-  role: "ADMIN" | "STAFF";
+  name?: string;
+  email?: string;
+  username?: string;
+  role?: "ADMIN" | "STAFF";
+  password?: string;
 }
 
 export interface IUpdateUserResponse {
@@ -73,6 +74,18 @@ export interface IDeleteUserParams {
 }
 
 export interface IDeleteUserResponse {
+  status: boolean;
+  message: string;
+  error?: unknown;
+}
+
+export interface IChangePasswordParams {
+  id: string;
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface IChangePasswordResponse {
   status: boolean;
   message: string;
   error?: unknown;

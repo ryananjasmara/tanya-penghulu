@@ -1,5 +1,7 @@
 import axios from "axios";
 import {
+  IChangePasswordParams,
+  IChangePasswordResponse,
   ICreateUserParams,
   ICreateUserResponse,
   IDeleteUserParams,
@@ -65,6 +67,20 @@ export const userService = {
   delete: async (params: IDeleteUserParams): Promise<IDeleteUserResponse> => {
     const { data: response } = await axios.delete<IDeleteUserResponse>(
       `/api/users/${params.id}`
+    );
+
+    if (!response.status) {
+      throw new Error(response.message);
+    }
+
+    return response;
+  },
+  changePassword: async (
+    data: IChangePasswordParams
+  ): Promise<IChangePasswordResponse> => {
+    const { data: response } = await axios.put<IChangePasswordResponse>(
+      `/api/users/${data.id}/change-password`,
+      data
     );
 
     if (!response.status) {
