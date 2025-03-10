@@ -1,7 +1,13 @@
-import { NextAuthOptions } from "next-auth";
+import { DefaultUser, NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { verifyPassword } from "./password";
 import prisma from "@/lib/prisma";
+
+type UserRole = "ADMIN" | "STAFF";
+
+interface User extends DefaultUser {
+  role: UserRole;
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -43,16 +49,17 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    jwt: async ({ token, user }) => {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.role = (user as User).role;
       }
       return token;
     },
-    session: async ({ session, token }) => {
+    async session({ session, token }) {
       if (token) {
         session.user.id = token.id as string;
-        session.user.role = token.role as "ADMIN" | "STAFF";
+        session.user.role = token.role as UserRole;
       }
       return session;
     },
@@ -67,14 +74,13 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 };
 
-// Untuk type safety
 declare module "next-auth" {
   interface Session {
     user: {
       id: string;
       name: string;
       email: string;
-      role: "ADMIN" | "STAFF";
+      role: UserRole;
     };
   }
 }
