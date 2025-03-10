@@ -9,6 +9,7 @@ export default function EditUserPage() {
         <Breadcrumb
           items={[
             { title: "Pengguna" },
+            { title: "Daftar Pengguna", href: "/users" },
             { title: "Edit Pengguna", href: "/users/edit" },
           ]}
           style={{ marginBottom: 24 }}

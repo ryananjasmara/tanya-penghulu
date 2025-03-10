@@ -9,6 +9,7 @@ export default function CreateUserPage() {
         <Breadcrumb
           items={[
             { title: "Pengguna" },
+            { title: "Daftar Pengguna", href: "/users" },
             { title: "Buat Pengguna", href: "/users/create" },
           ]}
           style={{ marginBottom: 24 }}
