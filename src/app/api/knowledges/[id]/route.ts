@@ -4,6 +4,8 @@ import { KnowledgeSchema } from "@/lib/validations/knowledge";
 import { ZodError } from "zod";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { apiResponse } from "@/lib/api-response";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/auth-options";
 
 export async function GET(
   _request: NextRequest,
@@ -42,6 +44,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    const session = await getServerSession(authOptions);
     const body = await request.json();
     const validatedData = KnowledgeSchema.parse(body);
 
@@ -51,6 +54,16 @@ export async function PUT(
         keywords: validatedData.keywords,
         answer: validatedData.answer,
         category: validatedData.category,
+      },
+    });
+
+    await prisma.activityLog.create({
+      data: {
+        action: "UPDATE_KNOWLEDGE",
+        description: `Updated knowledge: ${knowledge.id}`,
+        type: session?.user ? "USER" : "SYSTEM",
+        userId: session?.user?.id,
+        ipAddress: request.headers.get("x-forwarded-for") || "unknown",
       },
     });
 
@@ -87,12 +100,23 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
+    const session = await getServerSession(authOptions);
     await prisma.knowledge.delete({
       where: { id: params.id },
+    });
+
+    await prisma.activityLog.create({
+      data: {
+        action: "DELETE_KNOWLEDGE",
+        description: `Deleted knowledge: ${params.id}`,
+        type: session?.user ? "USER" : "SYSTEM",
+        userId: session?.user?.id,
+        ipAddress: request.headers.get("x-forwarded-for") || "unknown",
+      },
     });
 
     return apiResponse({

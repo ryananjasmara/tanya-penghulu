@@ -3,6 +3,8 @@ import prisma from "@/lib/prisma";
 import { KnowledgeSchema } from "@/lib/validations/knowledge";
 import { ZodError } from "zod";
 import { apiResponse } from "@/lib/api-response";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/auth-options";
 
 export async function GET(request: NextRequest) {
   try {
@@ -43,6 +45,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getServerSession(authOptions);
+
     const body = await request.json();
 
     const validatedData = KnowledgeSchema.parse(body);
@@ -52,6 +56,16 @@ export async function POST(request: NextRequest) {
         keywords: validatedData.keywords,
         answer: validatedData.answer,
         category: validatedData.category,
+      },
+    });
+
+    await prisma.activityLog.create({
+      data: {
+        action: "CREATE_KNOWLEDGE",
+        description: `Created new knowledge: ${knowledge.id}`,
+        type: session?.user ? "USER" : "SYSTEM",
+        userId: session?.user?.id,
+        ipAddress: request.headers.get("x-forwarded-for") || "unknown",
       },
     });
 
