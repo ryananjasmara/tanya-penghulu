@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { PERMISSIONS, hasPermission } from "@/lib/auth/permissions";
 
 // CORS headers configuration
 const CORS_HEADERS = {
@@ -31,10 +32,7 @@ const createErrorResponse = (message: string, status: number) => {
 
 // Check if path is public
 const isPublicPath = (pathname: string) => {
-  const publicPaths = [
-    "/api/auth",
-    "/api/missing-answers",
-  ];
+  const publicPaths = ["/api/auth", "/api/missing-answers"];
   return publicPaths.some((path) => pathname.startsWith(path));
 };
 
@@ -42,6 +40,41 @@ const isPublicPath = (pathname: string) => {
 const isPublicKnowledge = (pathname: string, method: string) => {
   return pathname.startsWith("/api/knowledges") && method === "GET";
 };
+
+const PROTECTED_ROUTES = [
+  {
+    path: "/users",
+    permission: PERMISSIONS.READ_USER,
+  },
+  {
+    path: "/users/create",
+    permission: PERMISSIONS.CREATE_USER,
+  },
+  {
+    path: "/users/:id",
+    permission: PERMISSIONS.UPDATE_USER,
+  },
+  {
+    path: "/knowledges",
+    permission: PERMISSIONS.READ_KNOWLEDGE,
+  },
+  {
+    path: "/knowledges/create",
+    permission: PERMISSIONS.CREATE_KNOWLEDGE,
+  },
+  {
+    path: "/knowledges/:id",
+    permission: PERMISSIONS.UPDATE_KNOWLEDGE,
+  },
+  {
+    path: "/logs",
+    permission: PERMISSIONS.READ_LOG_ACTIVITY,
+  },
+  {
+    path: "/questions",
+    permission: PERMISSIONS.READ_QUESTION,
+  },
+] as const;
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -75,6 +108,22 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  // Check permission for the accessed route
+  const protectedRoute = PROTECTED_ROUTES.find((route) =>
+    pathname.startsWith(route.path)
+  );
+
+  if (protectedRoute) {
+    const hasAccess = hasPermission(
+      token.role as string,
+      protectedRoute.permission
+    );
+
+    if (!hasAccess) {
+      return createErrorResponse("Unauthorized access", 403);
+    }
+  }
+
   return NextResponse.next();
 }
 
@@ -85,5 +134,6 @@ export const config = {
     "/users/:path*",
     "/questions/:path*",
     "/knowledges/:path*",
+    "/logs/:path*",
   ],
 };
