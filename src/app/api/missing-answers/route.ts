@@ -7,6 +7,46 @@ const MissingAnswerSchema = z.object({
   question: z.string().min(1),
 });
 
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const page = Number(searchParams.get("page")) || 1;
+    const limit = Number(searchParams.get("limit")) || 10;
+
+    const skip = (page - 1) * limit;
+
+    const [missingAnswers, total] = await Promise.all([
+      prisma.missingAnswer.findMany({
+        skip,
+        take: limit,
+        orderBy: {
+          createdAt: "desc",
+        },
+      }),
+      prisma.missingAnswer.count(),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return apiResponse({
+      message: "Missing answers fetched successfully",
+      data: missingAnswers,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
+      },
+    });
+  } catch (error) {
+    return apiResponse({
+      status: false,
+      message: "Failed to fetch missing answers",
+      statusCode: 500,
+    });
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -36,7 +76,6 @@ export async function POST(request: NextRequest) {
     return apiResponse({
       status: false,
       message: "Failed to record question",
-      error: error instanceof Error ? error.message : "Unknown error",
       statusCode: 500,
     });
   }

@@ -8,10 +8,13 @@ import {
   BookOutlined,
   MessageOutlined,
   ArrowLeftOutlined,
+  FileOutlined,
 } from "@ant-design/icons";
 import { useRouter, usePathname } from "next/navigation";
 import { Outfit } from "next/font/google";
 import { signOut } from "next-auth/react";
+import { PERMISSIONS } from "@/lib/auth/permissions";
+import { usePermission } from "@/utils/hooks/usePermission";
 
 const { Header, Sider, Content } = Layout;
 const { Title } = Typography;
@@ -37,23 +40,37 @@ export function SidebarClient({ children }: SidebarLayoutProps) {
       key: "/dashboard",
       icon: <DashboardOutlined />,
       label: "Dashboard",
+      permission: PERMISSIONS.READ_DASHBOARD,
     },
     {
       key: "/users",
       icon: <UserOutlined />,
       label: "Pengguna",
+      permission: PERMISSIONS.READ_USER,
     },
     {
       key: "/questions",
       icon: <MessageOutlined />,
       label: "Pertanyaan",
+      permission: PERMISSIONS.READ_QUESTION,
     },
     {
       key: "/knowledges",
       icon: <BookOutlined />,
       label: "Pengetahuan",
+      permission: PERMISSIONS.READ_KNOWLEDGE,
+    },
+    {
+      key: "/logs",
+      icon: <FileOutlined />,
+      label: "Riwayat Aktivitas",
+      permission: PERMISSIONS.READ_LOG_ACTIVITY,
     },
   ];
+
+  const authorizedMenuItems = menuItems.filter((item) => {
+    return usePermission(item.permission);
+  });
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -96,7 +113,7 @@ export function SidebarClient({ children }: SidebarLayoutProps) {
           theme="light"
           mode="inline"
           selectedKeys={[pathname]}
-          items={menuItems}
+          items={authorizedMenuItems}
           onClick={({ key }) => {
             if (key === pathname && !screens.md) {
               setCollapsed(true);
@@ -126,13 +143,21 @@ export function SidebarClient({ children }: SidebarLayoutProps) {
               style={{ fontSize: "18px", cursor: "pointer" }}
             />
           )}
-          <Button
-            type="primary"
-            onClick={() => signOut()}
-            style={{ marginLeft: "auto" }}
-          >
-            Logout
-          </Button>
+          <div style={{ marginLeft: "auto" }}>
+            <Button
+              type="primary"
+              onClick={() => router.push("/profile")}
+              style={{ marginRight: "8px" }}
+            >
+              Ubah Password
+            </Button>
+            <Button
+              type="primary"
+              onClick={() => signOut()}
+            >
+              Keluar
+            </Button>
+          </div>
         </Header>
         <Content
           style={{

@@ -4,19 +4,17 @@ import { KnowledgeSchema } from "@/lib/validations/knowledge";
 import { ZodError } from "zod";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { apiResponse } from "@/lib/api-response";
-
-interface RouteContext {
-  id: string;
-}
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/auth-options";
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: Promise<RouteContext> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const knowledge = await prisma.knowledge.findUnique({
       where: {
-        id: (await params).id,
+        id: params.id,
       },
     });
 
@@ -36,7 +34,6 @@ export async function GET(
     return apiResponse({
       status: false,
       message: "Failed to fetch knowledge",
-      error: error instanceof Error ? error.message : "Unknown error",
       statusCode: 500,
     });
   }
@@ -44,18 +41,29 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<RouteContext> }
+  { params }: { params: { id: string } }
 ) {
   try {
+    const session = await getServerSession(authOptions);
     const body = await request.json();
     const validatedData = KnowledgeSchema.parse(body);
 
     const knowledge = await prisma.knowledge.update({
-      where: { id: (await params).id },
+      where: { id: params.id },
       data: {
         keywords: validatedData.keywords,
         answer: validatedData.answer,
         category: validatedData.category,
+      },
+    });
+
+    await prisma.activityLog.create({
+      data: {
+        action: "UPDATE_KNOWLEDGE",
+        description: `Updated knowledge: ${knowledge.id}`,
+        type: session?.user ? "USER" : "SYSTEM",
+        userId: session?.user?.id,
+        ipAddress: request.headers.get("x-forwarded-for") || "unknown",
       },
     });
 
@@ -92,12 +100,23 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: Promise<RouteContext> }
+  request: NextRequest,
+  { params }: { params: { id: string } }
 ) {
   try {
+    const session = await getServerSession(authOptions);
     await prisma.knowledge.delete({
-      where: { id: (await params).id },
+      where: { id: params.id },
+    });
+
+    await prisma.activityLog.create({
+      data: {
+        action: "DELETE_KNOWLEDGE",
+        description: `Deleted knowledge: ${params.id}`,
+        type: session?.user ? "USER" : "SYSTEM",
+        userId: session?.user?.id,
+        ipAddress: request.headers.get("x-forwarded-for") || "unknown",
+      },
     });
 
     return apiResponse({

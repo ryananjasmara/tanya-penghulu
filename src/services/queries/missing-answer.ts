@@ -1,9 +1,20 @@
-import { useMutation, UseMutationResult } from "@tanstack/react-query";
+import {
+  useMutation,
+  UseMutationResult,
+  useQuery,
+  UseQueryResult,
+} from "@tanstack/react-query";
 import { missingAnswerService } from "../api";
-import { ICreateMissingAnswerParams, ICreateMissingAnswerResponse } from "@/types/missing-answer";
+import {
+  ICreateMissingAnswerParams,
+  ICreateMissingAnswerResponse,
+  IGetAllMissingAnswersParams,
+  IGetAllMissingAnswersResponse,
+} from "@/types/missing-answer";
 
 export const MISSING_ANSWER_QUERY_KEY = {
   create: "missing-answers.create",
+  getAll: "missing-answers.getAll",
 } as const;
 
 export const useCreateMissingAnswer = (): UseMutationResult<
@@ -30,4 +41,18 @@ export const useCreateMissingAnswer = (): UseMutationResult<
   });
 
   return mutation;
+};
+
+export const useGetAllMissingAnswers = (
+  params: IGetAllMissingAnswersParams
+): UseQueryResult<IGetAllMissingAnswersResponse> => {
+  const query = useQuery({
+    queryKey: [MISSING_ANSWER_QUERY_KEY.getAll, params],
+    queryFn: async () => {
+      const response = await missingAnswerService.getAll(params);
+      return response;
+    },
+  });
+
+  return query;
 };

@@ -12,6 +12,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@ant-design/charts": "^2.2.6",
     "@ant-design/cssinjs": "1.23.0",
     "@ant-design/icons": "5.6.1",
     "@hookform/resolvers": "^4.1.3",

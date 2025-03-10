@@ -4,6 +4,7 @@ import { z } from "zod";
 import { apiResponse } from "@/lib/api-response";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth-options";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 const createUserSchema = z.object({
   name: z.string().min(1, "Nama harus diisi"),
@@ -13,9 +14,9 @@ const createUserSchema = z.object({
   role: z.enum(["ADMIN", "STAFF"]),
 });
 
-export async function GET(req: Request) {
+export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(req.url);
+    const { searchParams } = new URL(request.url);
     const page = Number(searchParams.get("page")) || 1;
     const limit = Number(searchParams.get("limit")) || 10;
 
@@ -25,6 +26,16 @@ export async function GET(req: Request) {
       prisma.user.findMany({
         skip,
         take: limit,
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          username: true,
+          role: true,
+          isActive: true,
+          createdAt: true,
+          updatedAt: true,
+        },
         orderBy: {
           createdAt: "desc",
         },
@@ -53,10 +64,10 @@ export async function GET(req: Request) {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    const json = await req.json();
+    const json = await request.json();
     const body = createUserSchema.parse(json);
 
     const hashedPassword = await hashPassword(body.password);
@@ -84,11 +95,12 @@ export async function POST(req: Request) {
         description: `Created new user: ${user.username}`,
         type: session?.user ? "USER" : "SYSTEM",
         userId: session?.user?.id,
-        ipAddress: req.headers.get("x-forwarded-for") || "unknown",
+        ipAddress: request.headers.get("x-forwarded-for") || "unknown",
       },
     });
 
     return apiResponse({
+      status: true,
       data: user,
       message: "User created successfully",
     });
@@ -99,6 +111,17 @@ export async function POST(req: Request) {
         message: "Invalid input data",
         error: error.errors,
         statusCode: 400,
+      });
+    }
+
+    if (
+      error instanceof PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return apiResponse({
+        status: false,
+        message: "Failed to create user due to duplicate data",
+        statusCode: 500,
       });
     }
 

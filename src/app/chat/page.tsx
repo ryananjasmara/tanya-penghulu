@@ -3,7 +3,7 @@
 import { ChatForm } from "./__partials__/ChatForm";
 import { useCreateMissingAnswer, useGetAllKnowledge } from "@/services/queries";
 import { useChatStore } from "@/stores/useChatStore";
-import { findMatchingKnowledge } from "@/utils/knowledge-matcher";
+import { findMatchingKnowledge } from "@/utils/functions/knowledge-matcher";
 import {
   ArrowLeftOutlined,
   DeleteOutlined,
@@ -73,7 +73,7 @@ export default function ChatPage() {
 
     setTimeout(() => {
       const matchingKnowledge = findMatchingKnowledge(
-        knowledges || [],
+        knowledges?.data || [],
         userMessage
       );
 
