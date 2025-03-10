@@ -73,7 +73,7 @@ export default function ChatPage() {
 
     setTimeout(() => {
       const matchingKnowledge = findMatchingKnowledge(
-        knowledges || [],
+        knowledges?.data || [],
         userMessage
       );
 
