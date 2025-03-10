@@ -8,6 +8,7 @@ import {
   BookOutlined,
   MessageOutlined,
   ArrowLeftOutlined,
+  FileOutlined,
 } from "@ant-design/icons";
 import { useRouter, usePathname } from "next/navigation";
 import { Outfit } from "next/font/google";
@@ -52,6 +53,11 @@ export function SidebarClient({ children }: SidebarLayoutProps) {
       key: "/knowledges",
       icon: <BookOutlined />,
       label: "Pengetahuan",
+    },
+    {
+      key: "/logs",
+      icon: <FileOutlined />,
+      label: "Riwayat Aktivitas",
     },
   ];
 
