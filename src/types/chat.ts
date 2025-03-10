@@ -1,11 +1,11 @@
-export type Message = {
+export type IMessage = {
   id: string;
   content: string;
   sender: "user" | "bot";
   timestamp: Date;
 };
 
-export type Chat = {
+export type IChat = {
   id: string;
   title: string;
   lastMessage: string;

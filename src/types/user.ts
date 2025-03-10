@@ -1,4 +1,4 @@
-export interface UserData {
+export interface IUser {
   id: string;
   name: string;
   email: string;
@@ -17,8 +17,8 @@ export interface IGetAllUsersParams {
 export interface IGetAllUsersResponse {
   status: boolean;
   message: string;
-  data: UserData[];
-  metadata: {
+  data: IUser[];
+  meta: {
     total: number;
     page: number;
     limit: number;
@@ -38,7 +38,7 @@ export interface ICreateUserParams {
 export interface ICreateUserResponse {
   status: boolean;
   message: string;
-  data: UserData;
+  data: IUser;
   error?: unknown;
 }
 
@@ -53,7 +53,7 @@ export interface IUpdateUserParams {
 export interface IUpdateUserResponse {
   status: boolean;
   message: string;
-  data: UserData;
+  data: IUser;
   error?: unknown;
 }
 
@@ -64,7 +64,7 @@ export interface IGetUserDetailParams {
 export interface IGetUserDetailResponse {
   status: boolean;
   message: string;
-  data: UserData;
+  data: IUser;
   error?: unknown;
 }
 

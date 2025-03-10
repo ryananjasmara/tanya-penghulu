@@ -1,10 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Message, Chat } from "@/types/chat";
+import { IMessage, IChat } from "@/types/chat";
 
 interface ChatStore {
-  chats: Chat[];
-  messages: Record<string, Message[]>;
+  chats: IChat[];
+  messages: Record<string, IMessage[]>;
   activeChat: string | null;
   addChat: () => string;
   setActiveChat: (chatId: string) => void;
@@ -21,7 +21,7 @@ export const useChatStore = create<ChatStore>()(
       activeChat: null,
 
       addChat: () => {
-        const newChat: Chat = {
+        const newChat: IChat = {
           id: Date.now().toString(),
           title: "Chat Baru",
           lastMessage: "",
@@ -45,7 +45,7 @@ export const useChatStore = create<ChatStore>()(
       },
 
       addMessage: (chatId, content, sender) => {
-        const newMessage: Message = {
+        const newMessage: IMessage = {
           id: Date.now().toString(),
           content,
           sender,

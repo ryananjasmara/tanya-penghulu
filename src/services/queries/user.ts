@@ -11,10 +11,11 @@ import {
   IDeleteUserParams,
   IDeleteUserResponse,
   IGetAllUsersParams,
+  IGetAllUsersResponse,
   IGetUserDetailParams,
   IUpdateUserParams,
   IUpdateUserResponse,
-  UserData,
+  IUser,
 } from "@/types/user";
 
 export const USER_QUERY_KEY = {
@@ -26,12 +27,12 @@ export const USER_QUERY_KEY = {
 
 export const useGetAllUsers = (
   params: IGetAllUsersParams
-): UseQueryResult<UserData[]> => {
+): UseQueryResult<IGetAllUsersResponse> => {
   const query = useQuery({
     queryKey: [USER_QUERY_KEY.getAll, params],
     queryFn: async () => {
       const response = await userService.getAll(params);
-      return response.data;
+      return response;
     },
   });
 
@@ -40,7 +41,7 @@ export const useGetAllUsers = (
 
 export const useGetUserDetail = (
   params: IGetUserDetailParams
-): UseQueryResult<UserData> => {
+): UseQueryResult<IUser> => {
   const query = useQuery({
     queryKey: [USER_QUERY_KEY.getAll, params],
     queryFn: async () => {
