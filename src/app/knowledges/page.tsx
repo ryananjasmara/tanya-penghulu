@@ -5,6 +5,8 @@ import { KnowledgeTable } from "./__partials__/KnowledgeTable";
 import { Breadcrumb } from "@/components/breadcrumb/Breadcrumb";
 import { Button } from "antd";
 import { useRouter } from "next/navigation";
+import { PermissionGate } from "@/components/permission-gate/PermissionGate";
+import { PERMISSIONS } from "@/lib/auth/permissions";
 
 export default function KnowledgesPage() {
   const router = useRouter();
@@ -24,13 +26,15 @@ export default function KnowledgesPage() {
           ]}
           style={{ marginBottom: 24 }}
         />
-        <Button
-          type="primary"
-          style={{ marginBottom: 24 }}
-          onClick={() => router.push("/knowledges/create")}
-        >
-          Tambah Pengetahuan
-        </Button>
+        <PermissionGate permission={PERMISSIONS.CREATE_KNOWLEDGE}>
+          <Button
+            type="primary"
+            style={{ marginBottom: 24 }}
+            onClick={() => router.push("/knowledges/create")}
+          >
+            Tambah Pengetahuan
+          </Button>
+        </PermissionGate>
         <KnowledgeTable />
       </div>
     </SidebarClient>

@@ -19,6 +19,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SorterResult } from "antd/es/table/interface";
+import { PermissionGate } from "@/components/permission-gate/PermissionGate";
+import { PERMISSIONS } from "@/lib/auth/permissions";
+import { usePermission } from "@/utils/hooks/usePermission";
 export function UserTable() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -33,6 +36,9 @@ export function UserTable() {
     page,
     limit: pageSize,
   });
+
+  const hasUpdateUser = usePermission(PERMISSIONS.UPDATE_USER);
+  const hasDeleteUser = usePermission(PERMISSIONS.DELETE_USER);
 
   const handleEditUser = (record: IUser) => {
     router.push(`/users/${record.id}`);
@@ -124,23 +130,28 @@ export function UserTable() {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Tooltip title="Edit">
-            <Button
-              type="text"
-              icon={<EditOutlined />}
-              onClick={() => handleEditUser(record)}
-            />
-          </Tooltip>
-          <Tooltip title="Hapus">
-            <Button
-              type="text"
-              danger
-              icon={<DeleteOutlined />}
-              onClick={() => handleDeleteUser(record)}
-            />
-          </Tooltip>
+          <PermissionGate permission={PERMISSIONS.UPDATE_USER}>
+            <Tooltip title="Edit">
+              <Button
+                type="text"
+                icon={<EditOutlined />}
+                onClick={() => handleEditUser(record)}
+              />
+            </Tooltip>
+          </PermissionGate>
+          <PermissionGate permission={PERMISSIONS.DELETE_USER}>
+            <Tooltip title="Hapus">
+              <Button
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => handleDeleteUser(record)}
+              />
+            </Tooltip>
+          </PermissionGate>
         </Space>
       ),
+      hidden: !hasUpdateUser && !hasDeleteUser,
     },
   ];
 

@@ -17,8 +17,11 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { IKnowledge } from "@/types/knowledge";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { SorterResult } from "antd/es/table/interface";
+import { PermissionGate } from "@/components/permission-gate/PermissionGate";
+import { PERMISSIONS } from "@/lib/auth/permissions";
+import { usePermission } from "@/utils/hooks/usePermission";
 export function KnowledgeTable() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -33,6 +36,9 @@ export function KnowledgeTable() {
     page,
     limit: pageSize,
   });
+
+  const hasUpdateKnowledge = usePermission(PERMISSIONS.UPDATE_KNOWLEDGE);
+  const hasDeleteKnowledge = usePermission(PERMISSIONS.DELETE_KNOWLEDGE);
 
   const handleEditKnowledge = (record: IKnowledge) => {
     router.push(`/knowledges/${record.id}`);
@@ -106,23 +112,28 @@ export function KnowledgeTable() {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Tooltip title="Edit">
-            <Button
-              type="text"
-              icon={<EditOutlined />}
-              onClick={() => handleEditKnowledge(record)}
-            />
-          </Tooltip>
-          <Tooltip title="Hapus">
-            <Button
-              type="text"
-              danger
-              icon={<DeleteOutlined />}
-              onClick={() => handleDeleteKnowledge(record)}
-            />
-          </Tooltip>
+          <PermissionGate permission={PERMISSIONS.UPDATE_KNOWLEDGE}>
+            <Tooltip title="Edit">
+              <Button
+                type="text"
+                icon={<EditOutlined />}
+                onClick={() => handleEditKnowledge(record)}
+              />
+            </Tooltip>
+          </PermissionGate>
+          <PermissionGate permission={PERMISSIONS.DELETE_KNOWLEDGE}>
+            <Tooltip title="Hapus">
+              <Button
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => handleDeleteKnowledge(record)}
+              />
+            </Tooltip>
+          </PermissionGate>
         </Space>
       ),
+      hidden: !hasUpdateKnowledge && !hasDeleteKnowledge,
     },
   ];
 

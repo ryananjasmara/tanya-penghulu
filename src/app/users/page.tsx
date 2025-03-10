@@ -4,6 +4,8 @@ import { SidebarClient } from "@/components/layout/Sidebar";
 import { Breadcrumb, Button } from "antd";
 import { UserTable } from "./__partials__/UserTable";
 import { useRouter } from "next/navigation";
+import { PermissionGate } from "@/components/permission-gate/PermissionGate";
+import { PERMISSIONS } from "@/lib/auth/permissions";
 
 export default function UsersPage() {
   const router = useRouter();
@@ -18,13 +20,15 @@ export default function UsersPage() {
           ]}
           style={{ marginBottom: 24 }}
         />
-        <Button
-          type="primary"
-          style={{ marginBottom: 24 }}
-          onClick={() => router.push("/users/create")}
-        >
-          Tambah Pengguna
-        </Button>
+        <PermissionGate permission={PERMISSIONS.CREATE_USER}>
+          <Button
+            type="primary"
+            style={{ marginBottom: 24 }}
+            onClick={() => router.push("/users/create")}
+          >
+            Tambah Pengguna
+          </Button>
+        </PermissionGate>
         <UserTable />
       </div>
     </SidebarClient>
