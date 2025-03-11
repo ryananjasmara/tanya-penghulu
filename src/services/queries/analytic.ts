@@ -15,6 +15,8 @@ export const useGetAnalyticsSummary =
         const response = await analyticService.getAll();
         return response;
       },
+      refetchInterval: 1000 * 60 * 5,
+      staleTime: 1000 * 30,
     });
 
     return query;
