@@ -6,16 +6,27 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { apiResponse } from "@/lib/api-response";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth-options";
+import { getCachedData, setCachedData, invalidateCache } from "@/lib/redis/cache";
+
+const CACHE_KEY = 'knowledges';
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
+    const cacheKey = `${CACHE_KEY}:${params.id}`;
+    
+    const cachedData = await getCachedData(cacheKey);
+    if (cachedData) {
+      return apiResponse({
+        message: "Knowledge retrieved from cache",
+        data: cachedData,
+      });
+    }
+
     const knowledge = await prisma.knowledge.findUnique({
-      where: {
-        id: params.id,
-      },
+      where: { id: params.id },
     });
 
     if (!knowledge) {
@@ -25,6 +36,8 @@ export async function GET(
         statusCode: 404,
       });
     }
+
+    await setCachedData(cacheKey, knowledge);
 
     return apiResponse({
       message: "Knowledge retrieved successfully",
@@ -56,6 +69,11 @@ export async function PUT(
         category: validatedData.category,
       },
     });
+
+    await invalidateCache([
+      `${CACHE_KEY}:${params.id}`,
+      `${CACHE_KEY}:page*`,
+    ]);
 
     await prisma.activityLog.create({
       data: {
@@ -108,6 +126,11 @@ export async function DELETE(
     await prisma.knowledge.delete({
       where: { id: params.id },
     });
+
+    await invalidateCache([
+      `${CACHE_KEY}:${params.id}`,
+      `${CACHE_KEY}:page*`,
+    ]);
 
     await prisma.activityLog.create({
       data: {

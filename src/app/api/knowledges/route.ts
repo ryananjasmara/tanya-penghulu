@@ -5,6 +5,9 @@ import { ZodError } from "zod";
 import { apiResponse } from "@/lib/api-response";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth-options";
+import { getCachedData, setCachedData, invalidateCache } from "@/lib/redis/cache";
+
+const CACHE_KEY = "knowledges";
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,20 +15,28 @@ export async function GET(request: NextRequest) {
     const page = Number(searchParams.get("page")) || 1;
     const limit = Number(searchParams.get("limit")) || 10;
 
+    const cacheKey = `${CACHE_KEY}:page${page}:limit${limit}`;
+    
+    const cachedData = await getCachedData(cacheKey);
+    if (cachedData) {
+      return apiResponse({
+        message: "Knowledge retrieved from cache",
+        data: cachedData,
+      });
+    }
+
     const skip = (page - 1) * limit;
-
-    const total = await prisma.knowledge.count();
-
-    const knowledges = await prisma.knowledge.findMany({
-      orderBy: { createdAt: "desc" },
-      skip,
-      take: limit,
-    });
+    const [knowledges, total] = await Promise.all([
+      prisma.knowledge.findMany({
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: limit,
+      }),
+      prisma.knowledge.count(),
+    ]);
 
     const totalPages = Math.ceil(total / limit);
-
-    return apiResponse({
-      message: "Knowledge retrieved successfully",
+    const response = {
       data: knowledges,
       meta: {
         total,
@@ -33,6 +44,13 @@ export async function GET(request: NextRequest) {
         limit,
         totalPages,
       },
+    };
+
+    await setCachedData(cacheKey, response);
+
+    return apiResponse({
+      message: "Knowledge retrieved successfully",
+      data: response,
     });
   } catch (error) {
     return apiResponse({
@@ -68,6 +86,8 @@ export async function POST(request: NextRequest) {
         ipAddress: request.headers.get("x-forwarded-for") || "unknown",
       },
     });
+
+    await invalidateCache([`${CACHE_KEY}:*`]);
 
     return apiResponse({
       message: "Knowledge created successfully",
