@@ -5,7 +5,11 @@ import { ZodError } from "zod";
 import { apiResponse } from "@/lib/api-response";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth-options";
-import { getCachedData, setCachedData, invalidateCache } from "@/lib/redis/cache";
+import {
+  getCachedData,
+  setCachedData,
+  invalidateCache,
+} from "@/lib/redis/cache";
 
 const CACHE_KEY = "knowledges";
 
@@ -16,12 +20,12 @@ export async function GET(request: NextRequest) {
     const limit = Number(searchParams.get("limit")) || 10;
 
     const cacheKey = `${CACHE_KEY}:page${page}:limit${limit}`;
-    
+
     const cachedData = await getCachedData(cacheKey);
     if (cachedData) {
       return apiResponse({
         message: "Knowledge retrieved from cache",
-        data: cachedData,
+        ...cachedData,
       });
     }
 
@@ -50,7 +54,7 @@ export async function GET(request: NextRequest) {
 
     return apiResponse({
       message: "Knowledge retrieved successfully",
-      data: response,
+      ...response,
     });
   } catch (error) {
     return apiResponse({
