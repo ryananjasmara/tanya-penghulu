@@ -135,5 +135,6 @@ export const config = {
     "/questions/:path*",
     "/knowledges/:path*",
     "/logs/:path*",
+    "/chat-votes/:path*",
   ],
 };
