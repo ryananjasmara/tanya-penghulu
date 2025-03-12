@@ -17,13 +17,19 @@ enum LogType {
   USER
 }
 
+enum VoteType {
+  UPVOTE
+  DOWNVOTE
+} 
+
 model Knowledge {
-  id        String   @id @default(uuid())
+  id        String     @id @default(cuid())
   keywords  String[]
-  answer    String
-  category  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  answer    String     @db.Text
+  category  String
+  votes     ChatVote[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
   @@map("knowledges")
 }
@@ -64,4 +70,21 @@ model ActivityLog {
   user      User?   @relation(fields: [userId], references: [id])
 
   @@map("activity_logs")
-} 
+}
+
+model ChatVote {
+  id          String    @id @default(cuid())
+  question    String    @db.Text
+  knowledgeId String
+  knowledge   Knowledge @relation(fields: [knowledgeId], references: [id], onDelete: Cascade)
+  vote        VoteType
+  feedback    String?   @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([knowledgeId])
+  @@index([vote])
+  @@index([createdAt])
+
+  @@map("chat_votes")
+}

@@ -17,6 +17,9 @@ export const PERMISSIONS = {
   // Log Activity
   READ_LOG_ACTIVITY: "READ_LOG_ACTIVITY",
 
+  // Chat Vote
+  READ_CHAT_VOTE: "READ_CHAT_VOTE",
+
   // Dashboard
   READ_DASHBOARD: "READ_DASHBOARD",
 } as const;
@@ -31,6 +34,7 @@ export const ROLE_PERMISSIONS: Record<string, Permission[]> = {
     PERMISSIONS.UPDATE_KNOWLEDGE,
     PERMISSIONS.READ_QUESTION,
     PERMISSIONS.READ_DASHBOARD,
+    PERMISSIONS.READ_CHAT_VOTE,
   ],
 };
 

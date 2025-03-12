@@ -66,6 +66,12 @@ export function SidebarClient({ children }: SidebarLayoutProps) {
       label: "Riwayat Aktivitas",
       permission: PERMISSIONS.READ_LOG_ACTIVITY,
     },
+    {
+      key: "/chat-votes",
+      icon: <FileOutlined />,
+      label: "Voting",
+      permission: PERMISSIONS.READ_CHAT_VOTE,
+    },
   ];
 
   const authorizedMenuItems = menuItems.filter((item) => {
@@ -151,10 +157,7 @@ export function SidebarClient({ children }: SidebarLayoutProps) {
             >
               Ubah Password
             </Button>
-            <Button
-              type="primary"
-              onClick={() => signOut()}
-            >
+            <Button type="primary" onClick={() => signOut()}>
               Keluar
             </Button>
           </div>

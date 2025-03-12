@@ -2,6 +2,10 @@ export type IMessage = {
   id: string;
   content: string;
   sender: "user" | "bot";
+  vote?: {
+    type: "UPVOTE" | "DOWNVOTE";
+    knowledgeId: string;
+  };
   timestamp: Date;
 };
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { ChatForm } from "./__partials__/ChatForm";
-import { useCreateMissingAnswer, useGetAllKnowledge } from "@/services/queries";
+import { useCreateMissingAnswer, useCreateVote, useGetAllKnowledge } from "@/services/queries";
 import { useChatStore } from "@/stores/useChatStore";
 import { findMatchingKnowledge } from "@/utils/functions/knowledge-matcher";
 import {
@@ -10,8 +10,18 @@ import {
   PlusOutlined,
   RobotOutlined,
   UserOutlined,
+  LikeOutlined,
+  DislikeOutlined,
 } from "@ant-design/icons";
-import { Avatar, Button, Layout, List, Popconfirm, Typography } from "antd";
+import {
+  Avatar,
+  Button,
+  Layout,
+  List,
+  Popconfirm,
+  Typography,
+  message,
+} from "antd";
 import { Grid } from "antd";
 import { theme } from "antd";
 import { Outfit } from "next/font/google";
@@ -39,6 +49,8 @@ export default function ChatPage() {
     setActiveChat,
     addMessage,
     deleteChat,
+    addVote,
+    hasVoted,
   } = useChatStore();
 
   const { data: knowledges } = useGetAllKnowledge({
@@ -47,6 +59,8 @@ export default function ChatPage() {
   });
 
   const { mutate: createMissingAnswer } = useCreateMissingAnswer();
+
+  const { mutate: createVote } = useCreateVote();
 
   const isNewChat = !activeChat;
   const currentMessages = useMemo(
@@ -119,6 +133,63 @@ export default function ChatPage() {
   useEffect(() => {
     setCollapsed(!screens.md);
   }, [screens.md]);
+
+  const handleVote = async (
+    botMessage: any,
+    voteType: "UPVOTE" | "DOWNVOTE"
+  ) => {
+    if (!activeChat) return;
+
+    const botMessageIndex = currentMessages.findIndex(
+      (msg) => msg.content === botMessage.content
+    );
+
+    const userMessage =
+      botMessageIndex > 1 ? currentMessages[botMessageIndex - 2] : null;
+
+    if (!userMessage || userMessage.sender !== "user") {
+      message.error("Tidak dapat menemukan pertanyaan terkait");
+      return;
+    }
+
+    const matchingKnowledge = findMatchingKnowledge(
+      knowledges?.data || [],
+      botMessage.content
+    );
+
+    if (!matchingKnowledge) {
+      message.error("Tidak dapat menemukan knowledge untuk jawaban ini");
+      return;
+    }
+
+    // Check if already voted
+    if (hasVoted(activeChat, matchingKnowledge.id)) {
+      message.info("Anda sudah memberikan feedback untuk jawaban ini");
+      return;
+    }
+
+    try {
+      await createVote({
+        question: userMessage.content,
+        knowledgeId: matchingKnowledge.id,
+        vote: voteType,
+      });
+
+      // Add vote to message
+      addVote(activeChat, botMessageIndex, {
+        type: voteType,
+        knowledgeId: matchingKnowledge.id,
+      });
+
+      message.success(
+        voteType === "UPVOTE"
+          ? "Terima kasih atas feedback positifnya!"
+          : "Terima kasih atas feedback Anda"
+      );
+    } catch (error) {
+      message.error("Gagal memberikan feedback");
+    }
+  };
 
   return (
     <Layout>
@@ -423,7 +494,7 @@ export default function ChatPage() {
                       maxWidth: "80%",
                       flexDirection:
                         message.sender === "user" ? "row" : "row-reverse",
-                      alignItems: "center",
+                      alignItems: "flex-start",
                     }}
                   >
                     <Avatar
@@ -445,32 +516,92 @@ export default function ChatPage() {
                     />
                     <div
                       style={{
-                        padding: "12px 16px",
-                        borderRadius: "12px",
-                        background:
-                          message.sender === "user"
-                            ? "#E6F4FF"
-                            : token.colorBgContainer,
-                        border: `1px solid ${
-                          message.sender === "user"
-                            ? "#BAE0FF"
-                            : token.colorBorderSecondary
-                        }`,
-                        whiteSpace: "pre-wrap",
-                        maxWidth: "100%",
-                        wordBreak: "break-word",
-                        overflowWrap: "break-word",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "8px",
                       }}
                     >
-                      <Text
+                      <div
                         style={{
-                          display: "block",
-                          maxWidth: "600px",
-                          wordWrap: "break-word",
+                          padding: "12px 16px",
+                          borderRadius: "12px",
+                          background:
+                            message.sender === "user"
+                              ? "#E6F4FF"
+                              : token.colorBgContainer,
+                          border: `1px solid ${
+                            message.sender === "user"
+                              ? "#BAE0FF"
+                              : token.colorBorderSecondary
+                          }`,
+                          whiteSpace: "pre-wrap",
+                          maxWidth: "100%",
+                          wordBreak: "break-word",
+                          overflowWrap: "break-word",
                         }}
                       >
-                        {message.content}
-                      </Text>
+                        <Text
+                          style={{
+                            display: "block",
+                            maxWidth: "600px",
+                            wordWrap: "break-word",
+                          }}
+                        >
+                          {message.content}
+                        </Text>
+                      </div>
+
+                      {message.sender === "bot" &&
+                        !message.content.includes(
+                          "Mohon tunggu sebentar, saya sedang mencari jawaban untuk pertanyaan Anda."
+                        ) && (
+                          <div
+                            style={{
+                              display: "flex",
+                              gap: "16px",
+                              alignItems: "center",
+                              padding: "0 8px",
+                            }}
+                          >
+                            {(() => {
+                              const knowledge = findMatchingKnowledge(
+                                knowledges?.data || [],
+                                message.content
+                              );
+                              const voted = knowledge
+                                ? hasVoted(activeChat, knowledge.id)
+                                : false;
+
+                              return voted ? (
+                                <Text
+                                  type="secondary"
+                                  style={{ fontSize: "12px" }}
+                                >
+                                  Terima kasih atas feedback Anda
+                                </Text>
+                              ) : (
+                                <>
+                                  <Button
+                                    type="text"
+                                    icon={<LikeOutlined />}
+                                    size="small"
+                                    onClick={() =>
+                                      handleVote(message, "UPVOTE")
+                                    }
+                                  />
+                                  <Button
+                                    type="text"
+                                    icon={<DislikeOutlined />}
+                                    size="small"
+                                    onClick={() =>
+                                      handleVote(message, "DOWNVOTE")
+                                    }
+                                  />
+                                </>
+                              );
+                            })()}
+                          </div>
+                        )}
                     </div>
                   </div>
                 </List.Item>
