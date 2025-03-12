@@ -6,6 +6,10 @@ export interface IAnalyticsSummary {
     knowledges: {
       total: number;
     };
+    feedbacks: {
+      positive: number;
+      negative: number;
+    };
     missingAnswers: {
       total: number;
       dailyTrend: {
@@ -13,15 +17,6 @@ export interface IAnalyticsSummary {
         count: number;
         type: string;
       }[];
-    };
-    activities: {
-      today: {
-        total: number;
-        breakdown: {
-          type: string;
-          value: number;
-        }[];
-      };
     };
   };
 }
