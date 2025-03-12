@@ -7,18 +7,24 @@ interface ChatStore {
   messages: Record<string, IMessage[]>;
   activeChat: string | null;
   addChat: () => string;
-  setActiveChat: (chatId: string) => void;
+  setActiveChat: (id: string) => void;
   addMessage: (chatId: string, content: string, sender: "user" | "bot") => void;
   updateChatTitle: (chatId: string, title: string) => void;
-  deleteChat: (chatId: string) => void;
+  deleteChat: (id: string) => void;
+  addVote: (
+    chatId: string,
+    messageIndex: number,
+    vote: { type: "UPVOTE" | "DOWNVOTE"; knowledgeId: string }
+  ) => void;
+  hasVoted: (chatId: string, knowledgeId: string) => boolean;
 }
 
 export const useChatStore = create<ChatStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       chats: [],
       messages: {},
-      activeChat: null,
+      activeChat: "",
 
       addChat: () => {
         const newChat: IChat = {
@@ -93,6 +99,22 @@ export const useChatStore = create<ChatStore>()(
           ),
           activeChat: state.activeChat === chatId ? null : state.activeChat,
         }));
+      },
+
+      addVote: (chatId, messageIndex, vote) => {
+        set((state) => ({
+          messages: {
+            ...state.messages,
+            [chatId]: state.messages[chatId].map((msg, index) =>
+              index === messageIndex ? { ...msg, vote } : msg
+            ),
+          },
+        }));
+      },
+
+      hasVoted: (chatId, knowledgeId) => {
+        const messages = get().messages[chatId] || [];
+        return messages.some((msg) => msg.vote?.knowledgeId === knowledgeId);
       },
     }),
     {
