@@ -1,7 +1,11 @@
 "use client";
 
 import { ChatForm } from "./__partials__/ChatForm";
-import { useCreateMissingAnswer, useCreateVote, useGetAllKnowledge } from "@/services/queries";
+import {
+  useCreateMissingAnswer,
+  useCreateVote,
+  useGetAllKnowledge,
+} from "@/services/queries";
 import { useChatStore } from "@/stores/useChatStore";
 import { findMatchingKnowledge } from "@/utils/functions/knowledge-matcher";
 import {
@@ -554,6 +558,9 @@ export default function ChatPage() {
                       {message.sender === "bot" &&
                         !message.content.includes(
                           "Mohon tunggu sebentar, saya sedang mencari jawaban untuk pertanyaan Anda."
+                        ) &&
+                        !message.content.includes(
+                          "Maaf, saya tidak menemukan jawaban yang sesuai dengan pertanyaan Anda. Mohon ajukan pertanyaan lain tentang pernikahan dalam Islam."
                         ) && (
                           <div
                             style={{
