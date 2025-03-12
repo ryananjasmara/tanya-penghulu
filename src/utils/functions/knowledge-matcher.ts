@@ -1,9 +1,19 @@
 import { IKnowledge } from "@/types/knowledge";
 
 export function findMatchingKnowledge(
-  knowledges: IKnowledge[],
+  knowledges: IKnowledge[] | null | undefined,
   keyword: string
 ): IKnowledge | null {
+  if (!knowledges || !Array.isArray(knowledges) || knowledges.length === 0) {
+    console.warn("Invalid or empty knowledges array");
+    return null;
+  }
+
+  if (!keyword) {
+    console.warn("Empty keyword provided");
+    return null;
+  }
+
   const lowerKeyword = keyword.toLowerCase();
   const words = lowerKeyword.split(" ");
 
