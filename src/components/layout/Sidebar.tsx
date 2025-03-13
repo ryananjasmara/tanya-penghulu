@@ -9,6 +9,7 @@ import {
   MessageOutlined,
   ArrowLeftOutlined,
   FileOutlined,
+  LineChartOutlined,
 } from "@ant-design/icons";
 import { useRouter, usePathname } from "next/navigation";
 import { Outfit } from "next/font/google";
@@ -68,8 +69,8 @@ export function SidebarClient({ children }: SidebarLayoutProps) {
     },
     {
       key: "/chat-votes",
-      icon: <FileOutlined />,
-      label: "Voting",
+      icon: <LineChartOutlined />,
+      label: "Feedback",
       permission: PERMISSIONS.READ_CHAT_VOTE,
     },
   ];
