@@ -1,25 +1,33 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["tanya-nikah"]
 }
 
 enum UserRole {
   ADMIN
   STAFF
+
+  @@schema("tanya-nikah")
 }
 
 enum LogType {
   SYSTEM
   USER
+
+  @@schema("tanya-nikah")
 }
 
 enum VoteType {
   UPVOTE
   DOWNVOTE
+
+  @@schema("tanya-nikah")
 } 
 
 model Knowledge {
@@ -31,7 +39,8 @@ model Knowledge {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 
-  @@map("knowledges")
+  @@schema("tanya-nikah")
+  @@map("tanya-nikah.knowledges")
 }
 
 model MissingAnswer {
@@ -41,7 +50,8 @@ model MissingAnswer {
 
   @@index([createdAt])
 
-  @@map("missing_answers")
+  @@schema("tanya-nikah")
+  @@map("tanya-nikah.missing_answers")
 }
 
 model User {
@@ -57,7 +67,8 @@ model User {
 
   activityLogs ActivityLog[]
 
-  @@map("users")
+  @@schema("tanya-nikah")
+  @@map("tanya-nikah.users")
 }
 
 model ActivityLog {
@@ -73,7 +84,8 @@ model ActivityLog {
 
   @@index([createdAt])
 
-  @@map("activity_logs")
+  @@schema("tanya-nikah")
+  @@map("tanya-nikah.activity_logs")
 }
 
 model ChatVote {
@@ -90,5 +102,6 @@ model ChatVote {
   @@index([vote])
   @@index([createdAt])
 
-  @@map("chat_votes")
+  @@schema("tanya-nikah")
+  @@map("tanya-nikah.chat_votes")
 }
